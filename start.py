@@ -3,7 +3,7 @@ import threading
 import time
 import subprocess
 import shlex
-import ssh
+#import ssh
 
 class system():
         def __init__(self):
@@ -27,6 +27,7 @@ class system():
                     pk = p.split('=')
                     self.properties[pk[0].strip()] = pk[1].strip()
             #print(self.properties)
+            self.ssh = False
             self.password = ""
             self.user = 'emam'
 
@@ -35,27 +36,40 @@ class system():
                 threading.Thread(target=self.run_readers, args = (i,)).start()
             for i in range(int(self.properties['numberOfWriters'])):
                 threading.Thread(target=self.run_writers, args = (i+int(self.properties['numberOfReaders']),)).start()
-            #command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
-            #command = "ssh " + self.user + "@" + self.properties['server'] + " "
-            command = "python3 server.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfReaders'] + " " + self.properties['numberOfWriters'] + " " + self.properties['numberOfAccesses']
+            if self.ssh:
+                command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
+                #command = "ssh " + self.user + "@" + self.properties['server'] + " "
+            else:
+                command = ""
+            command += "python3 server.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfReaders'] + " " + self.properties['numberOfWriters'] + " " + self.properties['numberOfAccesses']
             #process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             #output, error = process.communicate()
-            #args = shlex.split(command)
-            #process = subprocess.Popen(args)
-            #output, error = process.communicate()
-            myssh = ssh.SSH(self.properties['server'] , execute=command, askpass=True, user=self.user, password=self.password.encode())
-            myssh.run()
+            #myssh = ssh.SSH(self.properties['server'] , execute=command, askpass=True, user=self.user, password=self.password.encode())
+            #myssh.run()
+            args = shlex.split(command)
+            process = subprocess.Popen(args)
+            output, error = process.communicate()
 
         def run_readers(self, i):
             time.sleep(0.5)
-            command = "python3 reader.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfAccesses'] + " " + str(i)
+            if self.ssh:
+                command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
+                #command = "ssh " + self.user + "@" + self.properties['server'] + " "
+            else:
+                command = ""
+            command += "python3 reader.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfAccesses'] + " " + str(i)
             args = shlex.split(command)
             process = subprocess.Popen(args)
             output, error = process.communicate()
 
         def run_writers(self, i):
             time.sleep(0.5)
-            command = "python3 writer.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfAccesses'] + " " + str(i)
+            if self.ssh:
+                command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
+                #command = "ssh " + self.user + "@" + self.properties['server'] + " "
+            else:
+                command = ""
+            command += "python3 writer.py " + self.properties['server'] + " " + self.properties['server.port'] + " " + self.properties['numberOfAccesses'] + " " + str(i)
             args = shlex.split(command)
             process = subprocess.Popen(args)
             output, error = process.communicate()

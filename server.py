@@ -68,13 +68,15 @@ class server():
                 if is_r:
                     self.read_log += str(seq) + "    " + str(self.oval) + "    " + str(cid) + "     " + str(len(self.r_ids)) + "\n"
                     #print(self.read_log)
-                    self.r_ids.remove(cid)
+                    #self.r_ids.remove(cid)
                 else:
                     self.write_log += str(seq) + "    " + str(self.oval) + "     " + str(cid) + "\n"
                 response = client.recv(1024)
                 while response.decode() != 'end':
                     print(response)
                     response = client.recv(1024)
+                if is_r:
+                    self.r_ids.remove(cid)
 
         # Ending Chat
         def kill(self):
