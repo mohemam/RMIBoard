@@ -8,7 +8,7 @@ class SSH(object):
         self.user = user
         self.password = password
         self.ask_pass = askpass
-        self.run()
+        #self.run()
 
     def run(self):
         command = [

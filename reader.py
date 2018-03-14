@@ -11,6 +11,7 @@ class client():
         self.port = int(port)
         self.access = int(access)
         self.id = int(cid)
+        self.log = "Client type: Reader \nClient Name: " + str(self.id) + "\nrSeq sSeq oVal \n\n"
 
     def run(self):
         self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,12 +24,16 @@ class client():
                 data = data.decode()
             datal = data.split(' ')
             #print(datal)
+            self.log += str(datal[1]) + "   " + str(datal[1]) + "   " + str(datal[0]) + "\n"
             secs = random.randint(0, 10)
             time.sleep(secs)
             self.my_socket.send('end'.encode())
             secs = random.randint(0, 10)
             time.sleep(secs)
         self.my_socket.close()
+        fo = open("log" + str(self.id), "w")
+        fo.write(self.log)
+        fo.close()
 
 if __name__ == '__main__':
     my_client = client(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

@@ -27,7 +27,7 @@ class system():
                     pk = p.split('=')
                     self.properties[pk[0].strip()] = pk[1].strip()
             #print(self.properties)
-            self.ssh = False
+            self.usessh = False
             self.password = ""
             self.user = 'emam'
 
@@ -36,7 +36,7 @@ class system():
                 threading.Thread(target=self.run_readers, args = (i,)).start()
             for i in range(int(self.properties['numberOfWriters'])):
                 threading.Thread(target=self.run_writers, args = (i+int(self.properties['numberOfReaders']),)).start()
-            if self.ssh:
+            if self.usessh:
                 command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
                 #command = "ssh " + self.user + "@" + self.properties['server'] + " "
             else:
@@ -52,7 +52,7 @@ class system():
 
         def run_readers(self, i):
             time.sleep(0.5)
-            if self.ssh:
+            if self.usessh:
                 command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
                 #command = "ssh " + self.user + "@" + self.properties['server'] + " "
             else:
@@ -64,7 +64,7 @@ class system():
 
         def run_writers(self, i):
             time.sleep(0.5)
-            if self.ssh:
+            if self.usessh:
                 command = "sshpass -p " + self.password + "ssh " + self.user + "@" + self.properties['server'] + " "
                 #command = "ssh " + self.user + "@" + self.properties['server'] + " "
             else:
